@@ -89,6 +89,7 @@
      <file role="test" name="imap_clearflag_full_uid.phpt" />
      <file role="test" name="imap_close_basic.phpt" />
      <file role="test" name="imap_close_variation4.phpt" />
+     <file role="test" name="imap_connection_free.phpt" />
      <file role="test" name="imap_constructor.phpt" />
      <file role="test" name="imap_createmailbox_basic.phpt" />
      <file role="test" name="imap_delete_uid.phpt" />

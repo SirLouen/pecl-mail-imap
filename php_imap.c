@@ -460,7 +460,7 @@ PHP_MINIT_FUNCTION(imap)
 	php_imap_ce->create_object = imap_object_create;
 
 	memcpy(&imap_object_handlers, &std_object_handlers, sizeof(zend_object_handlers));
-	imap_object_handlers.offset = XtOffsetOf(php_imap_object, std);
+	imap_object_handlers.offset = offsetof(php_imap_object, std);
 	imap_object_handlers.get_constructor = imap_object_get_constructor;
 	imap_object_handlers.free_obj = imap_object_destroy;
 	imap_object_handlers.clone_obj = NULL;
