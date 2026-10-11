@@ -32,9 +32,13 @@ jobs:
       - name: phpize
         run: phpize
       - name: configure
-        run: ./configure --with-imap --with-kerberos --with-imap-ssl
+        run: ./configure
       - name: make
         run: make
+      - name: Check that SSL and Kerberos support are enabled
+        run: |
+          php -n -d extension=modules/imap.so --ri imap | grep 'SSL Support => enabled'
+          php -n -d extension=modules/imap.so --ri imap | grep 'Kerberos Support => enabled'
       - name: Check that the test account can log in
         run: |
           for _ in $(seq 50); do
@@ -49,6 +53,23 @@ jobs:
         env:
           NO_INTERACTION: 1
           REPORT_EXIT_STATUS: 1
+  alpine:
+    name: Alpine PHP 8.5 (build only)
+    runs-on: ubuntu-24.04
+    container: php:8.5-cli-alpine
+    steps:
+      - name: Install dependencies
+        run: apk add --no-cache $PHPIZE_DEPS imap-dev openssl-dev
+      - name: git checkout
+        uses: actions/checkout@v4
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: ./configure
+      - name: make
+        run: make
+      - name: Check that SSL support is enabled
+        run: php -n -d extension=modules/imap.so --ri imap | grep 'SSL Support => enabled'
   windows:
     defaults:
       run:
