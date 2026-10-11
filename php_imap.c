@@ -57,6 +57,9 @@
 #include <stdlib.h>
 #include "win32/sendmail.h"
 MAILSTREAM DEFAULTPROTO;
+#else
+#include <sys/wait.h>
+#include <sysexits.h>
 #endif
 
 #define CRLF	"\015\012"
@@ -3846,8 +3849,20 @@ bool _php_imap_mail(zend_string *to, zend_string *subject, zend_string *message,
 		/* message cannot be a null pointer, asserted earlier on */
 		fprintf(sendmail, "\n%s\n", ZSTR_VAL(message));
 		ret = pclose(sendmail);
-
-		return ret != -1;
+		if (ret == -1) {
+			php_error_docref(NULL, E_WARNING, "Sendmail pclose failed %d (%s)", errno, strerror(errno));
+			return 0;
+		}
+		if (WIFSIGNALED(ret)) {
+			php_error_docref(NULL, E_WARNING, "Sendmail killed by signal %d (%s)", WTERMSIG(ret), strsignal(WTERMSIG(ret)));
+			return 0;
+		}
+		/* As in mail(), EX_TEMPFAIL means the message was queued */
+		if (WEXITSTATUS(ret) != 0 && WEXITSTATUS(ret) != EX_TEMPFAIL) {
+			php_error_docref(NULL, E_WARNING, "Sendmail exited with non-zero exit code %d", WEXITSTATUS(ret));
+			return 0;
+		}
+		return 1;
 	} else {
 		php_error_docref(NULL, E_WARNING, "Could not execute mail delivery program");
 		return 0;
