@@ -53,6 +53,31 @@ jobs:
         env:
           NO_INTERACTION: 1
           REPORT_EXIT_STATUS: 1
+      - name: Set up a GSSAPI login for bug63126.phpt
+        run: |
+          apt-get install -y --no-install-recommends dovecot-gssapi krb5-user
+          cat > /etc/krb5.conf <<'EOF'
+          [libdefaults]
+            default_realm = EXAMPLE.COM
+          EOF
+          printf 'addent -password -p imap/localhost@EXAMPLE.COM -k 1 -e aes256-cts-hmac-sha1-96\nsecret\nwkt /etc/dovecot/krb5.keytab\nquit\n' | ktutil
+          chmod 644 /etc/dovecot/krb5.keytab
+          sed -i -e 's/^auth_mechanisms = .*/auth_mechanisms = gssapi plain/' \
+            -e 's/^disable_plaintext_auth = .*/disable_plaintext_auth = no/' /etc/dovecot/dovecot.conf
+          cat >> /etc/dovecot/dovecot.conf <<'EOF'
+          auth_krb5_keytab = /etc/dovecot/krb5.keytab
+          auth_gssapi_hostname = "$ALL"
+          EOF
+          dovecot reload
+        env:
+          DEBIAN_FRONTEND: noninteractive
+      - name: Run bug63126.phpt
+        run: |
+          make test TESTS="--show-diff tests/bug63126.phpt" | tee gssapi.log
+          grep -E 'Tests passed +: +1 ' gssapi.log
+        env:
+          NO_INTERACTION: 1
+          REPORT_EXIT_STATUS: 1
   alpine:
     name: Alpine PHP 8.5 (build only)
     runs-on: ubuntu-24.04
