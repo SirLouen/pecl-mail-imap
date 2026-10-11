@@ -1,0 +1,44 @@
+{
+    "name": "sirlouen/imap",
+    "type": "php-ext",
+    "description": "An extension to operate with the IMAP protocol, as well as the NNTP, POP3, and local mailbox access methods.",
+    "keywords": [
+        "imap",
+        "pop3",
+        "nntp",
+        "mail",
+        "c-client"
+    ],
+    "homepage": "https://github.com/SirLouen/pecl-mail-imap",
+    "license": "PHP-3.01",
+    "support": {
+        "issues": "https://github.com/SirLouen/pecl-mail-imap/issues",
+        "source": "https://github.com/SirLouen/pecl-mail-imap"
+    },
+    "require": {
+        "php": ">= 8.3.0"
+    },
+    "php-ext": {
+        "extension-name": "imap",
+        "os-families-exclude": [
+            "windows"
+        ],
+        "configure-options": [
+            {
+                "name": "with-imap",
+                "description": "c-client install prefix (default: search /usr/local and /usr)",
+                "needs-value": true
+            },
+            {
+                "name": "with-kerberos",
+                "description": "Include Kerberos support (enabled automatically if c-client requires it)",
+                "needs-value": false
+            },
+            {
+                "name": "with-imap-ssl",
+                "description": "Include SSL support (enabled automatically if c-client requires it)",
+                "needs-value": false
+            }
+        ]
+    }
+}
