@@ -80,7 +80,13 @@ AC_DEFUN([PHP_IMAP_KRB_CHK], [
   fi
 
   if test "$PHP_KERBEROS" != "no"; then
-    PKG_CHECK_MODULES([KERBEROS], [krb5-gssapi krb5])
+    dnl On Debian and Ubuntu, libc-client-dev only pulls in krb5-multidev,
+    dnl which installs these modules with a mit- prefix.
+    php_imap_krb5_modules="krb5-gssapi krb5"
+    PKG_CHECK_EXISTS([$php_imap_krb5_modules], [],
+      [PKG_CHECK_EXISTS([mit-krb5-gssapi mit-krb5],
+        [php_imap_krb5_modules="mit-krb5-gssapi mit-krb5"])])
+    PKG_CHECK_MODULES([KERBEROS], [$php_imap_krb5_modules])
 
     PHP_EVAL_INCLINE($KERBEROS_CFLAGS)
     PHP_EVAL_LIBLINE($KERBEROS_LIBS, IMAP_SHARED_LIBADD)
