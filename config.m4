@@ -100,6 +100,13 @@ AC_DEFUN([PHP_IMAP_SSL_CHK], [
       PHP_IMAP_TEST_BUILD([ssl_onceonlyinit], [PHP_IMAP_SSL=yes], [],
         [$DLIBS $IMAP_SHARED_LIBADD])
     fi
+    dnl A static c-client also needs OpenSSL on the link line.
+    if test "$PHP_IMAP_SSL" = "no"; then
+      PKG_CHECK_EXISTS([openssl], [
+        PHP_IMAP_TEST_BUILD([ssl_onceonlyinit], [PHP_IMAP_SSL=yes], [],
+          [$DLIBS $IMAP_SHARED_LIBADD `$PKG_CONFIG --libs openssl`])
+      ])
+    fi
     if test "$PHP_IMAP_SSL" != "no"; then
       AC_MSG_NOTICE([c-client is built with SSL support, enabling --with-imap-ssl])
     fi
