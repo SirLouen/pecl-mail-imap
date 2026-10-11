@@ -1,0 +1,31 @@
+name: Release
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag
+        required: true
+permissions:
+  contents: write
+jobs:
+  pecl-package:
+    name: Attach the pecl package
+    runs-on: ubuntu-24.04
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+    steps:
+      - name: git checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          ref: refs/tags/${{ env.TAG }}
+          persist-credentials: false
+      - name: Check that php_imap.h has the release version
+        run: grep -F "#define PHP_IMAP_VERSION \"$TAG\"" php_imap.h
+      - name: pecl package
+        run: docker run --rm -v "$PWD:/src" -w /src php:8.5-cli@sha256:01a109229f4465bc9ef042d9198f09a4d9da7775a825dbd8572dcdbd8756c4d3 pecl package package.xml
+      - name: Upload to the release
+        run: gh release upload "$TAG" "imap-$TAG.tgz" --clobber --repo "$GITHUB_REPOSITORY"
+        env:
+          GH_TOKEN: ${{ github.token }}

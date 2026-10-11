@@ -41,6 +41,22 @@ the official PHP Docker images the build tools are listed in
 
 Windows is not supported through PIE yet.
 
+Installing with pecl
+--------------------
+
+Each release also comes with a package for ``pecl``, which needs the same
+build tools as PIE except ``unzip``. ``pecl`` cannot install it straight from
+the GitHub URL, so download it first::
+
+	curl -LO https://github.com/SirLouen/pecl-mail-imap/releases/download/1.1.1/imap-1.1.1.tgz
+	pecl install imap-1.1.1.tgz
+
+If ``pecl`` stops with "Extension 'imap' already loaded", remove your
+distribution's imap package first, for example ``apt remove php8.4-imap``.
+
+Then add ``extension=imap`` to your ``php.ini``. On the official PHP Docker
+images, run ``docker-php-ext-enable imap`` instead.
+
 Installation Issues
 -------------------
 
