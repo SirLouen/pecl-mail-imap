@@ -10,15 +10,20 @@
  <description>An extension to operate with the IMAP protocol, as well as the
  NNTP, POP3, and local mailbox access methods.</description>
  <lead>
+  <name>Manuel Camargo</name>
+  <user>SirLouen</user>
+  <email>sir.louen@gmail.com</email>
+  <active>yes</active>
+ </lead>
+ <lead>
   <name>Derick Rethans</name>
   <user>derick</user>
   <email>derick@php.net</email>
-  <active>yes</active>
+  <active>no</active>
  </lead>
- <date>2024-10-15</date>
- <time>10:59:33</time>
+ <date>2026-10-11</date>
  <version>
-  <release>1.0.3</release>
+  <release>1.1.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -27,8 +32,10 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
  <notes>
-- Build fixes for PHP 8.4.
-- Report extension version in phpinfo() output.
+- Build and run on PHP 8.6 and php-src master.
+- Install with PIE as sirlouen/imap.
+- configure enables Kerberos and SSL support by itself when c-client needs them, and reports a missing c-client clearly.
+- Fix imap_fetchbody_basic.phpt on PHP 8.5.
  </notes>
  <contents>
   <dir name="/">
@@ -159,4 +166,53 @@
   <configureoption name="with-kerberos" prompt="Include Kerberos Support" default="yes" />
   <configureoption name="with-imap-ssl" prompt="Include SSL Support" default="yes" />
  </extsrcrelease>
+ <changelog>
+  <release>
+   <date>2024-10-15</date>
+   <version>
+    <release>1.0.3</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
+   <notes>
+- Build fixes for PHP 8.4.
+- Report extension version in phpinfo() output.
+   </notes>
+  </release>
+  <release>
+   <date>2024-01-04</date>
+   <version>
+    <release>1.0.2</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
+   <notes>
+- Fixed package.xml file with required minumum PHP version of 8.3.
+- Fixed embedded version number.
+   </notes>
+  </release>
+  <release>
+   <date>2023-12-19</date>
+   <version>
+    <release>1.0.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
+   <notes>
+- Initial PECL release
+   </notes>
+  </release>
+ </changelog>
 </package>
