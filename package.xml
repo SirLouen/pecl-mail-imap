@@ -23,7 +23,7 @@
  </lead>
  <date>2026-10-11</date>
  <version>
-  <release>1.1.0</release>
+  <release>1.1.1</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -32,10 +32,8 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
  <notes>
-- Build and run on PHP 8.6 and php-src master.
-- Install with PIE as sirlouen/imap.
-- configure enables Kerberos and SSL support by itself when c-client needs them, and reports a missing c-client clearly.
-- Fix imap_fetchbody_basic.phpt on PHP 8.5.
+- Fix a crash in imap_close() with CL_EXPUNGE on a connection opened with OP_PROTOTYPE.
+- Report the correct extension version. 1.1.0 reported 1.0.3.
  </notes>
  <contents>
   <dir name="/">
@@ -168,6 +166,24 @@
   <configureoption name="with-imap-ssl" prompt="Include SSL Support" default="yes" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2026-10-11</date>
+   <version>
+    <release>1.1.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
+   <notes>
+- Build and run on PHP 8.6 and php-src master.
+- Install with PIE as sirlouen/imap.
+- configure enables Kerberos and SSL support by itself when c-client needs them, and reports a missing c-client clearly.
+- Fix imap_fetchbody_basic.phpt on PHP 8.5.
+   </notes>
+  </release>
   <release>
    <date>2024-10-15</date>
    <version>
