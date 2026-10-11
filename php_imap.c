@@ -3809,7 +3809,7 @@ bool _php_imap_mail(zend_string *to, zend_string *subject, zend_string *message,
 		strlcat(bufferHeader, ZSTR_VAL(headers), bufferLen + 1);
 	}
 
-	if (TSendMail(INI_STR("SMTP"), &tsm_err, &tsm_errmsg, bufferHeader, ZSTR_VAL(subject),
+	if (TSendMail(zend_ini_string_ex("SMTP", sizeof("SMTP") - 1, 0, NULL), &tsm_err, &tsm_errmsg, bufferHeader, ZSTR_VAL(subject),
 			bufferTo, ZSTR_VAL(message), bufferCc, bufferBcc, rpath ? ZSTR_VAL(rpath) : NULL) != SUCCESS) {
 		if (tsm_errmsg) {
 			php_error_docref(NULL, E_WARNING, "%s", tsm_errmsg);
@@ -3822,10 +3822,10 @@ bool _php_imap_mail(zend_string *to, zend_string *subject, zend_string *message,
 	}
 	PHP_IMAP_CLEAN;
 #else
-	if (!INI_STR("sendmail_path")) {
+	if (!zend_ini_string_ex("sendmail_path", sizeof("sendmail_path") - 1, 0, NULL)) {
 		return 0;
 	}
-	sendmail = popen(INI_STR("sendmail_path"), "w");
+	sendmail = popen(zend_ini_string_ex("sendmail_path", sizeof("sendmail_path") - 1, 0, NULL), "w");
 	if (sendmail) {
 		if (rpath && ZSTR_LEN(rpath) != 0) {
 			fprintf(sendmail, "From: %s\n", ZSTR_VAL(rpath));
