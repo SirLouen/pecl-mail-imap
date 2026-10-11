@@ -1,31 +1,54 @@
 name: Build
 on: [push, pull_request]
 jobs:
-  ubuntu:
+  linux:
+    name: Linux PHP ${{ matrix.image }}
+    runs-on: ubuntu-24.04
+    container: php:${{ matrix.image }}
     strategy:
+      fail-fast: false
       matrix:
-        version: ['8.4']
-    runs-on: ubuntu-22.04
+        image:
+          - 8.3-cli-bookworm
+          - 8.4-cli-bookworm
+          - 8.4-zts-bookworm
+          - 8.5-cli-bookworm
+          - 8.5-zts-bookworm
+          - 8.6-rc-cli-bookworm
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends $PHPIZE_DEPS \
+            libc-client-dev libkrb5-dev libssl-dev dovecot-imapd
       - name: git checkout
         uses: actions/checkout@v4
-      - name: Install depencies
+      - name: Start Dovecot
         run: |
-          sudo apt-get update -y | true
-          sudo apt-get install -y \
-            libkrb5-dev \
-            libgssapi-krb5-2 \
-            libc-client-dev
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{matrix.version}}
+          groupadd -g 5000 vmail
+          useradd -m -d /var/vmail -s /bin/false -u 5000 -g vmail vmail
+          cp tests/setup/dovecot.conf tests/setup/dovecotpass /etc/dovecot/
+          dovecot
       - name: phpize
         run: phpize
       - name: configure
         run: ./configure --with-imap --with-kerberos --with-imap-ssl
       - name: make
         run: make
+      - name: Check that the test account can log in
+        run: |
+          for _ in $(seq 50); do
+            php -r 'exit(@fsockopen("127.0.0.1", 143) ? 0 : 1);' && break
+            sleep 0.2
+          done
+          php -n -d extension=modules/imap.so -r '
+            require "tests/setup/imap_include.inc";
+            exit(imap_open(IMAP_SERVER_NO_DEBUG, IMAP_MAILBOX_USERNAME, IMAP_MAILBOX_PASSWORD, OP_HALFOPEN, 0) ? 0 : 1);'
+      - name: make test
+        run: make test TESTS="-j1 --show-diff tests"
+        env:
+          NO_INTERACTION: 1
+          REPORT_EXIT_STATUS: 1
   windows:
     defaults:
       run:
