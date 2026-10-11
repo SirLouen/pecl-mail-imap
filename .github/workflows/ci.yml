@@ -95,6 +95,26 @@ jobs:
         run: make
       - name: Check that SSL support is enabled
         run: php -n -d extension=modules/imap.so --ri imap | grep 'SSL Support => enabled'
+  no-c-client:
+    name: Debian 13 without c-client (configure error)
+    runs-on: ubuntu-24.04
+    container: php:8.5-cli
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends $PHPIZE_DEPS
+      - name: git checkout
+        uses: actions/checkout@v4
+      - name: phpize
+        run: phpize
+      - name: configure fails with a clear message
+        run: |
+          if ./configure > configure.log 2>&1; then
+            echo "configure succeeded without c-client"
+            exit 1
+          fi
+          grep 'Cannot find rfc822.h' configure.log
   windows:
     defaults:
       run:
