@@ -67,17 +67,14 @@ it.
 Debian and Ubuntu
 ~~~~~~~~~~~~~~~~~
 
-On Debian 12, Ubuntu 24.04 and Ubuntu 26.04 you can install it with
-``apt-get``. As this distribution installed library is compiled with Kerberos
-and SSL support, you need to make sure to have these development libraries
-installed too.
+On Debian 12, Ubuntu 24.04 and Ubuntu 26.04 you can install it, plus
+``unzip`` for PIE, with::
 
-You can install all of these, plus ``unzip`` for PIE, with::
+	apt-get install libc-client-dev unzip
 
-	apt-get install libc-client-dev libkrb5-dev libssl-dev unzip
-
-Kerberos and SSL support are enabled automatically, because the system
-installed c-client requires them.
+This also installs the Kerberos and SSL development libraries that this
+c-client is built with, and Kerberos and SSL support are enabled
+automatically.
 
 Alpine Linux
 ~~~~~~~~~~~~
