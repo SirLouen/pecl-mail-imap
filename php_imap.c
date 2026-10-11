@@ -1075,7 +1075,7 @@ PHP_FUNCTION(imap_close)
 			options ^= PHP_EXPUNGE;
 			options |= CL_EXPUNGE;
 		}
-		imap_conn_struct->flags = options;
+		imap_conn_struct->flags = options | (imap_conn_struct->flags & OP_PROTOTYPE);
 	}
 
 	/* Do not try to close prototype streams */
