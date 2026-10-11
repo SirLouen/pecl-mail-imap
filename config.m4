@@ -150,6 +150,10 @@ if test "$PHP_IMAP" != "no"; then
       fi
     done
 
+    if test -z "$IMAP_DIR"; then
+      AC_MSG_ERROR(Cannot find rfc822.h. Please check your c-client installation.)
+    fi
+
     dnl Check for c-client version 2004
     AC_EGREP_HEADER(mail_fetch_overview_sequence, $IMAP_INC_DIR/mail.h, [
       AC_DEFINE(HAVE_IMAP2004,1,[ ])
@@ -224,10 +228,6 @@ if test "$PHP_IMAP" != "no"; then
     ])
 
     PHP_EXPAND_PATH($IMAP_DIR, IMAP_DIR)
-
-    if test -z "$IMAP_DIR"; then
-      AC_MSG_ERROR(Cannot find rfc822.h. Please check your c-client installation.)
-    fi
 
     if test ! -r "$IMAP_DIR/c-client/libc-client.a" && test -r "$IMAP_DIR/c-client/c-client.a" ; then
       ln -s "$IMAP_DIR/c-client/c-client.a" "$IMAP_DIR/c-client/libc-client.a" >/dev/null 2>&1
