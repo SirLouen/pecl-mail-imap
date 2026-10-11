@@ -69,7 +69,16 @@ AC_DEFUN([PHP_IMAP_TEST_BUILD], [
   ])
 ])
 
+dnl A c-client built with Kerberos or SSL cannot be linked without them, so
+dnl enable them instead of failing. Installers such as PIE pass no options.
 AC_DEFUN([PHP_IMAP_KRB_CHK], [
+  if test "$PHP_KERBEROS" = "no"; then
+    AC_EGREP_HEADER(auth_gss, $IMAP_INC_DIR/linkage.h, [
+      AC_MSG_NOTICE([c-client is built with Kerberos support, enabling --with-kerberos])
+      PHP_KERBEROS=yes
+    ])
+  fi
+
   if test "$PHP_KERBEROS" != "no"; then
     PKG_CHECK_MODULES([KERBEROS], [krb5-gssapi krb5])
 
@@ -77,30 +86,31 @@ AC_DEFUN([PHP_IMAP_KRB_CHK], [
     PHP_EVAL_LIBLINE($KERBEROS_LIBS, IMAP_SHARED_LIBADD)
 
     AC_DEFINE(HAVE_IMAP_KRB, 1, [Whether IMAP extension has Kerberos support])
-  else
-    AC_EGREP_HEADER(auth_gss, $IMAP_INC_DIR/linkage.h, [
-      AC_MSG_ERROR([This c-client library is built with Kerberos support.
-
-      Add --with-kerberos to your configure line. Check config.log for details.
-      ])
-    ])
   fi
 ])
 
 AC_DEFUN([PHP_IMAP_SSL_CHK], [
+  if test "$PHP_IMAP_SSL" = "no"; then
+    if test -f "$IMAP_INC_DIR/linkage.c"; then
+      AC_EGREP_HEADER(ssl_onceonlyinit, $IMAP_INC_DIR/linkage.c, [PHP_IMAP_SSL=yes])
+    fi
+    dnl Alpine's linkage.c does not list it, so also try to link it. Only
+    dnl c-client's OpenSSL support defines ssl_onceonlyinit.
+    if test "$PHP_IMAP_SSL" = "no"; then
+      PHP_IMAP_TEST_BUILD([ssl_onceonlyinit], [PHP_IMAP_SSL=yes], [],
+        [$DLIBS $IMAP_SHARED_LIBADD])
+    fi
+    if test "$PHP_IMAP_SSL" != "no"; then
+      AC_MSG_NOTICE([c-client is built with SSL support, enabling --with-imap-ssl])
+    fi
+  fi
+
   if test "$PHP_IMAP_SSL" != "no"; then
     if test "$PHP_OPENSSL" = ""; then
       PHP_OPENSSL='no'
     fi
     PHP_SETUP_OPENSSL([IMAP_SHARED_LIBADD],
       [AC_DEFINE([HAVE_IMAP_SSL], [1], [ ])])
-  elif test -f "$IMAP_INC_DIR/linkage.c"; then
-    AC_EGREP_HEADER(ssl_onceonlyinit, $IMAP_INC_DIR/linkage.c, [
-      AC_MSG_ERROR([This c-client library is built with SSL support.
-
-      Add --with-imap-ssl to your configure line. Check config.log for details.
-      ])
-    ])
   fi
 ])
 
