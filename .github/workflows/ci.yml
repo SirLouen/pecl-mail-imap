@@ -115,6 +115,28 @@ jobs:
             exit 1
           fi
           grep 'Cannot find rfc822.h' configure.log
+  pie:
+    name: Install with PIE (PHP 8.5)
+    runs-on: ubuntu-24.04
+    container: php:8.5-cli-bookworm
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends $PHPIZE_DEPS \
+            libc-client-dev libkrb5-dev libssl-dev
+      - name: git checkout
+        uses: actions/checkout@v4
+      - name: Install PIE
+        run: |
+          curl -fsSL -o /usr/local/bin/pie https://github.com/php/pie/releases/download/1.5.2/pie.phar
+          chmod +x /usr/local/bin/pie
+      - name: pie install
+        run: |
+          pie repository:add path "$GITHUB_WORKSPACE"
+          pie install 'sirlouen/imap:*@dev'
+      - name: Check that the extension is loaded with SSL support
+        run: php --ri imap | grep 'SSL Support => enabled'
   windows:
     defaults:
       run:
