@@ -600,15 +600,13 @@ static void php_imap_set_authenticators(zval *names, long function)
 		if (Z_STRLEN_P(names) > 1) {
 			mail_parameters(NIL, function, (void *) Z_STRVAL_P(names));
 		}
-	} else {
-		uint32_t i, nelems = zend_hash_num_elements(Z_ARRVAL_P(names));
+		return;
+	}
+	for (uint32_t i = 0; i < zend_hash_num_elements(Z_ARRVAL_P(names)); i++) {
+		zval *name = zend_hash_index_find(Z_ARRVAL_P(names), i);
 
-		for (i = 0; i < nelems; i++) {
-			zval *name = zend_hash_index_find(Z_ARRVAL_P(names), i);
-
-			if (name && Z_TYPE_P(name) == IS_STRING && Z_STRLEN_P(name) > 1) {
-				mail_parameters(NIL, function, (void *) Z_STRVAL_P(name));
-			}
+		if (name && Z_STRLEN_P(name) > 1) {
+			mail_parameters(NIL, function, (void *) Z_STRVAL_P(name));
 		}
 	}
 }
