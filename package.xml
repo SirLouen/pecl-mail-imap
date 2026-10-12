@@ -125,6 +125,7 @@
      <file role="test" name="imap_list_basic.phpt" />
      <file role="test" name="imap_lsub_basic.phpt" />
      <file role="test" name="imap_mail_copy_basic.phpt" />
+     <file role="test" name="imap_mail_header_injection.phpt" />
      <file role="test" name="imap_mail_move_basic.phpt" />
      <file role="test" name="imap_mail_sendmail_failure.phpt" />
      <file role="test" name="imap_mail_sendmail_path.phpt" />
