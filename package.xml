@@ -32,7 +32,7 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
  <notes>
-- Reject line breaks in the address and subject arguments of imap_mail(), which allowed header injection (GHSA-7j2h-8378-qm32).
+- imap_mail() rejects line breaks in its address and subject arguments, except header folding (a line break followed by a space or tab). Before, they allowed header injection (GHSA-7j2h-8378-qm32).
 - imap_mail() returns false with a warning when the sendmail program fails or is killed.
 - configure finds Kerberos through krb5-multidev, so libc-client-dev is enough on Debian and Ubuntu.
  </notes>
