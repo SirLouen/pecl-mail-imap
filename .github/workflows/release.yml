@@ -26,6 +26,8 @@ jobs:
       - name: pecl package
         run: docker run --rm -v "$PWD:/src" -w /src php:8.5-cli@sha256:01a109229f4465bc9ef042d9198f09a4d9da7775a825dbd8572dcdbd8756c4d3 pecl package package.xml
       - name: Upload to the release
-        run: gh release upload "$TAG" "imap-$TAG.tgz" --clobber --repo "$GITHUB_REPOSITORY"
+        run: |
+          cp "imap-$TAG.tgz" imap.tgz
+          gh release upload "$TAG" "imap-$TAG.tgz" imap.tgz --clobber --repo "$GITHUB_REPOSITORY"
         env:
           GH_TOKEN: ${{ github.token }}
