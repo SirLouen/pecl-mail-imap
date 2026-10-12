@@ -133,6 +133,7 @@
      <file role="test" name="imap_mail_sendmail_signal.phpt" />
      <file role="test" name="imap_mail_sendmail_tempfail.phpt" />
      <file role="test" name="imap_mutf7_to_utf8.phpt" />
+     <file role="test" name="imap_open_disable_authenticator.phpt" />
      <file role="test" name="imap_open_error.phpt" />
      <file role="test" name="imap_open_with_cl_expunge.phpt" />
      <file role="test" name="imap_renamemailbox_basic.phpt" />

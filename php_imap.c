@@ -588,6 +588,29 @@ PHP_MINFO_FUNCTION(imap)
 }
 /* }}} */
 
+/**
+ * Disables or enables each authenticator named in the DISABLE_AUTHENTICATOR option.
+ *
+ * @param names    The option value, a string or an array of strings, already validated
+ * @param function DISABLE_AUTHENTICATOR or ENABLE_AUTHENTICATOR
+ */
+static void php_imap_set_authenticators(zval *names, long function)
+{
+	if (Z_TYPE_P(names) == IS_STRING) {
+		if (Z_STRLEN_P(names) > 1) {
+			mail_parameters(NIL, function, (void *) Z_STRVAL_P(names));
+		}
+		return;
+	}
+	for (uint32_t i = 0; i < zend_hash_num_elements(Z_ARRVAL_P(names)); i++) {
+		zval *name = zend_hash_index_find(Z_ARRVAL_P(names), i);
+
+		if (name && Z_STRLEN_P(name) > 1) {
+			mail_parameters(NIL, function, (void *) Z_STRVAL_P(name));
+		}
+	}
+}
+
 /* {{{ Open an IMAP stream to a mailbox */
 PHP_FUNCTION(imap_open)
 {
@@ -595,6 +618,7 @@ PHP_FUNCTION(imap_open)
 	zend_long retries = 0, flags = 0, cl_flags = 0;
 	MAILSTREAM *imap_stream;
 	HashTable *params = NULL;
+	zval *disabled_auth_method = NULL;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS(), "PSS|llh", &mailbox, &user, &passwd, &flags, &retries, &params) == FAILURE) {
 		RETURN_THROWS();
@@ -626,14 +650,9 @@ PHP_FUNCTION(imap_open)
 	}
 
 	if (params) {
-		zval *disabled_auth_method;
-
 		if ((disabled_auth_method = zend_hash_str_find(params, "DISABLE_AUTHENTICATOR", sizeof("DISABLE_AUTHENTICATOR") - 1)) != NULL) {
 			switch (Z_TYPE_P(disabled_auth_method)) {
 				case IS_STRING:
-					if (Z_STRLEN_P(disabled_auth_method) > 1) {
-						mail_parameters(NIL, DISABLE_AUTHENTICATOR, (void *)Z_STRVAL_P(disabled_auth_method));
-					}
 					break;
 				case IS_ARRAY:
 					{
@@ -646,11 +665,7 @@ PHP_FUNCTION(imap_open)
 						}
 						for (i = 0; i < nelems; i++) {
 							if ((z_auth_method = zend_hash_index_find(Z_ARRVAL_P(disabled_auth_method), i)) != NULL) {
-								if (Z_TYPE_P(z_auth_method) == IS_STRING) {
-									if (Z_STRLEN_P(z_auth_method) > 1) {
-										mail_parameters(NIL, DISABLE_AUTHENTICATOR, (void *)Z_STRVAL_P(z_auth_method));
-									}
-								} else {
+								if (Z_TYPE_P(z_auth_method) != IS_STRING) {
 									zend_argument_type_error(6, "option \"DISABLE_AUTHENTICATOR\" must be a string or an array of strings");
 									RETURN_THROWS();
 								}
@@ -689,9 +704,15 @@ PHP_FUNCTION(imap_open)
 	}
 #endif
 
+	if (disabled_auth_method) {
+		php_imap_set_authenticators(disabled_auth_method, DISABLE_AUTHENTICATOR);
+	}
 	ZEND_IGNORE_LEAKS_BEGIN();
 	imap_stream = mail_open(NIL, ZSTR_VAL(mailbox), flags);
 	ZEND_IGNORE_LEAKS_END();
+	if (disabled_auth_method) {
+		php_imap_set_authenticators(disabled_auth_method, ENABLE_AUTHENTICATOR);
+	}
 
 	if (imap_stream == NIL) {
 		php_error_docref(NULL, E_WARNING, "Couldn't open stream %s", ZSTR_VAL(mailbox));
