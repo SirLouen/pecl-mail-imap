@@ -3894,6 +3894,16 @@ PHP_FUNCTION(imap_mail)
 		RETURN_THROWS();
 	}
 
+	const struct { const zend_string *value; const char *name; } fields[] = {
+		{to, "to"}, {subject, "subject"}, {cc, "cc"}, {bcc, "bcc"}, {rpath, "return_path"},
+	};
+	for (size_t i = 0; i < sizeof(fields) / sizeof(fields[0]); i++) {
+		if (fields[i].value && header_injection(fields[i].value, false)) {
+			php_error_docref(NULL, E_WARNING, "header injection attempt in %s", fields[i].name);
+			RETURN_FALSE;
+		}
+	}
+
 	/* message body */
 	if (ZSTR_LEN(message) == 0) {
 		/* this is not really an error, so it is allowed. */
