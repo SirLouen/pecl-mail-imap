@@ -1,6 +1,6 @@
-====
-IMAP
-====
+==================
+PHP IMAP Extension
+==================
 
 This is the IMAP extension extracted from the PHP source distribution.
 PHP versions after PHP 8.3 no longer bundle this extension.
