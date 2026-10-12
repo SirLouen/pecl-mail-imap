@@ -21,9 +21,9 @@
   <email>derick@php.net</email>
   <active>no</active>
  </lead>
- <date>2026-10-11</date>
+ <date>2026-10-12</date>
  <version>
-  <release>1.1.1</release>
+  <release>1.1.2</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -32,8 +32,9 @@
  </stability>
  <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
  <notes>
-- Fix a crash in imap_close() with CL_EXPUNGE on a connection opened with OP_PROTOTYPE.
-- Report the correct extension version. 1.1.0 reported 1.0.3.
+- Reject line breaks in the address and subject arguments of imap_mail(), which allowed header injection (GHSA-7j2h-8378-qm32).
+- imap_mail() returns false with a warning when the sendmail program fails or is killed.
+- configure finds Kerberos through krb5-multidev, so libc-client-dev is enough on Debian and Ubuntu.
  </notes>
  <contents>
   <dir name="/">
@@ -170,6 +171,22 @@
   <configureoption name="with-imap-ssl" prompt="Include SSL Support" default="yes" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2026-10-11</date>
+   <version>
+    <release>1.1.1</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
+   <notes>
+- Fix a crash in imap_close() with CL_EXPUNGE on a connection opened with OP_PROTOTYPE.
+- Report the correct extension version. 1.1.0 reported 1.0.3.
+   </notes>
+  </release>
   <release>
    <date>2026-10-11</date>
    <version>
