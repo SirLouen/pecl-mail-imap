@@ -48,8 +48,11 @@ Each release also comes with a package for ``pecl``, which needs the same
 build tools as PIE except ``unzip``. ``pecl`` cannot install it straight from
 the GitHub URL, so download it first::
 
-	curl -LO https://github.com/SirLouen/pecl-mail-imap/releases/latest/download/imap.tgz
-	pecl install imap.tgz
+	curl -fLO https://github.com/SirLouen/pecl-mail-imap/releases/latest/download/imap.tgz
+	pecl install ./imap.tgz
+
+Keep the ``./``: if ``imap.tgz`` is missing or broken, ``pecl install imap.tgz``
+installs the old PECL imap 1.0.3 from pecl.php.net instead.
 
 If ``pecl`` stops with "Extension 'imap' already loaded", remove your
 distribution's imap package first, for example ``apt remove php8.4-imap``.
